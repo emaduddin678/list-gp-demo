@@ -5,9 +5,10 @@ import axios from "axios";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredItems, setFilteredItems] = useState([]);
+  const [searchedItem, setSearchedItem] = useState({});
+  const [allProduct, setAllProduct] = useState([]);
   const [isFocused, setIsFocused] = useState(false);
-  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
 
   const handleKeyDown = (event) => {
     if (!data || data.length === 0) return;
@@ -24,9 +25,10 @@ function App() {
         );
         break;
       case "Enter":
-        if (highlightedIndex >= 0) {
-          console.log(data[highlightedIndex]);
-          setSearchTerm(data[highlightedIndex].name); // Assuming the item has a 'name' property
+        if (highlightedIndex >= 0 && highlightedIndex < data.length) {
+          // console.log(data[highlightedIndex]);
+          setSearchedItem(data[highlightedIndex]); // Assuming the item has a 'name' property
+          setAllProduct((prev) => [...prev, data[highlightedIndex]]);
           setIsFocused(false);
         }
         break;
@@ -54,9 +56,16 @@ function App() {
   // console.log(data);
 
   const handleInputChange = (event) => {
-    const value = event.target.value;
-    setSearchTerm(value);
+    setSearchTerm(event.target.value);
   };
+  const handleItemClick = (item) => {
+    setSearchedItem(item); // Adjust according to the structure of your data
+    setAllProduct((prev) => [...prev, data[highlightedIndex]]);
+    setIsFocused(false);
+  };
+
+  console.log(searchedItem);
+  console.log(allProduct);
 
   //  useEffect(() => {
   //    const fetchData = async () => {
@@ -97,14 +106,17 @@ function App() {
               {data.map((item, index) => (
                 <li
                   key={index}
-                  className={`p-2 cursor-pointer ${
+                  className={`p-2 cursor-pointer flex justify-between ${
                     highlightedIndex === index ? "bg-gray-200" : ""
                   }`}
                   onMouseDown={() => handleItemClick(item)} // Use onMouseDown to avoid blur event
                   onMouseEnter={() => setHighlightedIndex(index)}
                 >
-                  {item.item_name}{" "}
-                  {/* {item.name} Adjust according to the structure of your data */}
+                  <span>{item.item_name} </span>
+                  <div>
+                    <span className="pr-4">{item.price} BDT</span>
+                    <span>{item.supplier}</span>
+                  </div>
                 </li>
               ))}
             </ul>
