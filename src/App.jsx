@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import DataGridPage from "./DataGridPage/DataPage";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -94,6 +95,7 @@ function App() {
     console.log("hello");
     if (Object.keys(searchedItem).length !== 0) {
       setAllProduct((prev) => [...prev, searchedItem]);
+      setSearchTerm("");
       setSearchedItem({});
     }
   };
@@ -118,9 +120,7 @@ function App() {
   //  }, []);
   return (
     <>
-      <form
-        className="searchField flex gap-2 justify-between items-end"
-      >
+      <form className="searchField flex gap-2 justify-between items-end">
         <div className="col-span-full sm:col-span-2">
           <label htmlFor="itName" className="text-sm">
             Item Name
@@ -142,20 +142,17 @@ function App() {
             className="w-full rounded-md focus:ring focus:ring-opacity-75  "
           />
           {isFocused && data && (
-            <ul className="absolute bg-white border border-gray-300 w-full rounded-md mt-1">
+            <ul className="absolute z-50 bg-white border border-gray-300 w-1/5 rounded-md mt-1">
               {data.map((item, index) => (
                 <li
                   key={index}
-                  className={`p-2 cursor-pointer flex justify-between ${
+                  className={`p-2 cursor-pointer flex justify-start ${
                     highlightedIndex === index ? "bg-gray-200" : ""
                   }`}
                   onMouseDown={() => handleItemClick(item)} // Use onMouseDown to avoid blur event
                   onMouseEnter={() => setHighlightedIndex(index)}
                 >
                   <span>{item.item_name} </span>
-                  <div>
-                    <span className="pr-4">{item.price} BDT</span>
-                  </div>
                 </li>
               ))}
             </ul>
@@ -169,7 +166,11 @@ function App() {
             id="itCode"
             type="text"
             disabled
-            value={searchedItem?.item_code}
+            value={
+              Object.keys(searchedItem).length !== 0
+                ? searchedItem.item_code
+                : "Item Code"
+            }
             placeholder="Item Code"
             className="w-full rounded-md focus:ring focus:ring-opacity-75 "
           />
@@ -182,7 +183,11 @@ function App() {
             id="itQuantity"
             type="number"
             min={1}
-            // value={quantity}
+            value={
+              Object.keys(searchedItem).length !== 0
+                ? searchedItem.quantity
+                : ""
+            }
             onChange={handelQuantity}
             placeholder="Enter Quantity..."
             className="w-full rounded-md focus:ring focus:ring-opacity-75 "
@@ -271,6 +276,7 @@ function App() {
           Save Now
         </button>
       </form>
+      <DataGridPage data={allProduct} />
     </>
   );
 }
