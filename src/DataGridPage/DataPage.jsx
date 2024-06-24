@@ -1,10 +1,14 @@
 import React from "react";
+import ExportToExcel from "../ExcelSheet/ExcelFile";
 
 const DataPage = ({ data }) => {
+  const fileName = "myfile";
   return (
     <div className="mt-8 relative overflow-x-auto shadow-md sm:rounded-lg">
-      <table className="w-full text-sm text-left rtl:text-right  text-gray-400">
-        <thead className="text-xs uppercase  bg-gray-700 text-gray-400">
+      <ExportToExcel apiData={data} fileName={fileName} />
+
+      <table className="w-full text-sm text-left rtl:text-right  text-gray-200">
+        <thead className="text-xs uppercase  bg-green-700 text-gray-200">
           <tr>
             <th scope="col" className="px-6 py-3">
               Item Name
@@ -32,7 +36,7 @@ const DataPage = ({ data }) => {
             </th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="text-black">
           {data.length > 0 &&
             data.map((item) => {
               return (
