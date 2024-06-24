@@ -28,7 +28,7 @@ function App() {
         if (highlightedIndex >= 0 && highlightedIndex < data.length) {
           // console.log(data[highlightedIndex]);
           setSearchedItem(data[highlightedIndex]); // Assuming the item has a 'name' property
-          setAllProduct((prev) => [...prev, data[highlightedIndex]]);
+          // setAllProduct((prev) => [...prev, data[highlightedIndex]]);
           setIsFocused(false);
         }
         break;
@@ -58,10 +58,44 @@ function App() {
   const handleInputChange = (event) => {
     setSearchTerm(event.target.value);
   };
+  const handelQuantity = (event) => {
+    setSearchedItem((prev) => {
+      return {
+        ...prev,
+        quantity: event.target.value,
+        totalAmount: event.target.value * prev.price,
+      };
+    });
+  };
+  const handelAcP = (event) => {
+    setSearchedItem((prev) => {
+      return {
+        ...prev,
+        acP: event.target.value,
+        ac: (event.target.value * prev.totalAmount) / 100,
+      };
+    });
+  };
+  const handleRemark = (event) => {
+    setSearchedItem((prev) => {
+      return {
+        ...prev,
+        remark: event.target.value,
+      };
+    });
+  };
   const handleItemClick = (item) => {
     setSearchedItem(item); // Adjust according to the structure of your data
-    setAllProduct((prev) => [...prev, data[highlightedIndex]]);
     setIsFocused(false);
+  };
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    console.log("hello");
+    if (Object.keys(searchedItem).length !== 0) {
+      setAllProduct((prev) => [...prev, searchedItem]);
+      setSearchedItem({});
+    }
   };
 
   console.log(searchedItem);
@@ -84,7 +118,9 @@ function App() {
   //  }, []);
   return (
     <>
-      <div className="searchField flex gap-2">
+      <form
+        className="searchField flex gap-2 justify-between items-end"
+      >
         <div className="col-span-full sm:col-span-2">
           <label htmlFor="itName" className="text-sm">
             Item Name
@@ -93,7 +129,11 @@ function App() {
             id="itName"
             type="text"
             placeholder="Search..."
-            value={searchTerm}
+            value={
+              Object.keys(searchedItem).length !== 0
+                ? searchedItem?.item_name
+                : searchTerm
+            }
             onChange={handleInputChange}
             onFocus={() => setIsFocused(true)}
             onKeyDown={handleKeyDown}
@@ -115,7 +155,6 @@ function App() {
                   <span>{item.item_name} </span>
                   <div>
                     <span className="pr-4">{item.price} BDT</span>
-                    <span>{item.supplier}</span>
                   </div>
                 </li>
               ))}
@@ -130,6 +169,7 @@ function App() {
             id="itCode"
             type="text"
             disabled
+            value={searchedItem?.item_code}
             placeholder="Item Code"
             className="w-full rounded-md focus:ring focus:ring-opacity-75 "
           />
@@ -142,7 +182,9 @@ function App() {
             id="itQuantity"
             type="number"
             min={1}
-            placeholder="Quantity"
+            // value={quantity}
+            onChange={handelQuantity}
+            placeholder="Enter Quantity..."
             className="w-full rounded-md focus:ring focus:ring-opacity-75 "
           />
         </div>
@@ -153,7 +195,11 @@ function App() {
           <input
             id="unitRate"
             type="text"
-            placeholder="0.00 BDT"
+            placeholder={
+              Object.keys(searchedItem).length !== 0
+                ? searchedItem.price
+                : "0.00 BDT"
+            }
             disabled
             className="w-full rounded-md focus:ring focus:ring-opacity-75 "
           />
@@ -165,7 +211,12 @@ function App() {
           <input
             id="totalRate"
             type="text"
-            placeholder="0.00 BDT"
+            placeholder={
+              Object.keys(searchedItem).length !== 0
+                ? searchedItem.totalAmount
+                : "0.00 BDT"
+            }
+            disabled
             className="w-full rounded-md focus:ring focus:ring-opacity-75 "
           />
         </div>
@@ -176,7 +227,9 @@ function App() {
           <input
             id="acP"
             type="text"
-            placeholder="..."
+            placeholder="0%"
+            // value={acP}
+            onChange={handelAcP}
             className="w-full rounded-md focus:ring focus:ring-opacity-75 "
           />
         </div>
@@ -187,7 +240,13 @@ function App() {
           <input
             id="ac"
             type="text"
-            placeholder="..."
+            disabled
+            value={
+              Object.keys(searchedItem).length !== 0
+                ? searchedItem.ac
+                : "0.00 BDT"
+            }
+            placeholder="0.00 BDT"
             className="w-full rounded-md focus:ring focus:ring-opacity-75 "
           />
         </div>
@@ -198,11 +257,20 @@ function App() {
           <input
             id="remark"
             type="text"
-            placeholder=""
+            placeholder="type a comment here..."
+            // value={remark}
+            onChange={handleRemark}
             className="w-full rounded-md focus:ring focus:ring-opacity-75 "
           />
         </div>
-      </div>
+        <button
+          type="button"
+          onClick={handleFormSubmit}
+          className="relative px-8 py-1  overflow-hidden font-semibold rounded bg-gray-100 text-gray-900"
+        >
+          Save Now
+        </button>
+      </form>
     </>
   );
 }
